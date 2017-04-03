@@ -263,7 +263,19 @@ areStatesInHigherStateSum = dataset.reduce(reduceNowStates, []).filter(filterSta
  */
 var anyStatesInHigherStateSum = null;
 
-anyStatesInHigherStateSum = !dataset.reduce(reduceNowStates, []).filter(filterStates).every(reduceBool);
+function reduceToBool(bool, elem) {
+  if (bool === true) {
+    return bool;
+  }
+
+  if (elem.amount > 2550000) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+anyStatesInHigherStateSum = dataset.reduce(reduceNowStates, []).filter(filterStates).reduce(reduceToBool, false);
 
 
 module.exports = {
