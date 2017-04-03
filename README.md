@@ -1,3 +1,5 @@
+![alt tag](https://travis-ci.org/GaganTut/fun-arrays.svg?branch=master)
+
 # Fun Arrays
 
 ## Functional Array method exercise

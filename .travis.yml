@@ -1,0 +1,8 @@
+language: node_js
+
+node_js:
+  - "stable"
+
+install:
+  - npm install -g mocha
+  - npm install -D chai
