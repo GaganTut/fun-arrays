@@ -23,14 +23,15 @@ var hundredThousandairs = dataset.filter(onlyHunGrand);
     }
   assign the resulting array to `roundedDollar`
 */
-
-var roundedDollar = dataset.map((element) => {
+function newRoundedProp(element) {
   return {
     amount: element.amount,
     state: element.state,
     rounded: Math.round(element.amount)
   };
-});
+}
+
+var roundedDollar = dataset.map(newRoundedProp);
 
 /*
   set a the `amount` value for each object in bankBalances
@@ -42,21 +43,22 @@ var roundedDollar = dataset.map((element) => {
     }
   assign the resulting array to `roundedDime`
 */
-
-var roundedDime = dataset.map((element) => {
+function roundToTens(element){
   return {
     amount: Math.round(element.amount * 10)/ 10,
     state: element.state,
   };
-});
+}
+
+var roundedDime = dataset.map(roundToTens);
 
 // set sumOfBankBalances to the sum of all amounts in bankBalances
 
-function addNums(num, elem) {
-  return Math.round((num += parseFloat(elem.amount)) * 100)/100;
+function toTotalSum(num, element) {
+  return Math.round((num += parseFloat(element.amount)) * 100)/100;
 }
 
-var sumOfBankBalances = dataset.reduce(addNums, 0);
+var sumOfBankBalances = dataset.reduce(toTotalSum, 0);
 /*
   set sumOfInterests to the sum of the 18.9% interest
   for all amounts in bankBalances
@@ -70,16 +72,16 @@ var sumOfBankBalances = dataset.reduce(addNums, 0);
   the result should be rounded to the nearest cent
  */
 
-function filterStates(elem) {
-  return ["WI", "IL", "WY", "OH", "GA", "DE"].indexOf(elem.state) > -1;
+function outSpecialStates(element) {
+  return ["WI", "IL", "WY", "OH", "GA", "DE"].indexOf(element.state) > -1;
 }
 
-function totalTax(num, elem) {
-  return Math.round((num + Math.round(elem.amount * 0.189 * 100)/100) * 100)/100;
+function downToTotalTax(num, element) {
+  return Math.round((num + Math.round(element.amount * 0.189 * 100)/100) * 100)/100;
 }
 
-var sumOfInterests = dataset.filter(filterStates)
-  .reduce(totalTax, 0);
+var sumOfInterests = dataset.filter(outSpecialStates)
+  .reduce(downToTotalTax, 0);
 
 /*
   set sumOfHighInterests to the sum of the 18.9% interest
@@ -96,34 +98,34 @@ var sumOfInterests = dataset.filter(filterStates)
   the result should be rounded to the nearest cent
  */
 
-function tax(elem) {
+function tax(element) {
   return {
-    state: elem.state,
-    tax: Math.round(elem.amount * 18.9)/100
+    state: element.state,
+    tax: Math.round(element.amount * 18.9)/100
   };
 }
 
-function arrToStateObj(obj, elem) {
-  if(obj.hasOwnProperty(elem.state)) {
-    obj[elem.state] += Math.round(parseFloat(elem.amount) * 100)/100;
+function arrToStateObj(obj, element) {
+  if(obj.hasOwnProperty(element.state)) {
+    obj[element.state] += Math.round(parseFloat(element.amount) * 100)/100;
   } else {
-    obj[elem.state] = Math.round(parseFloat(elem.amount) * 100)/100;
+    obj[element.state] = Math.round(parseFloat(element.amount) * 100)/100;
   }
-  obj[elem.state] = Math.round(parseFloat(obj[elem.state]) * 100)/ 100;
+  obj[element.state] = Math.round(parseFloat(obj[element.state]) * 100)/ 100;
 
   return obj;
 }
 
-function filterNonStates(elem) {
-  return ["WI", "IL", "WY", "OH", "GA", "DE"].indexOf(elem.state) === -1;
+function filterNonStates(element) {
+  return ["WI", "IL", "WY", "OH", "GA", "DE"].indexOf(element.state) === -1;
 }
 
-function filterAmt(elem) {
-  return parseFloat(elem.tax) > 50000;
+function filterAmt(element) {
+  return parseFloat(element.tax) > 50000;
 }
 
-function totalTaxNow(num, elem) {
-  return Math.round((num + elem.tax) * 100)/100;
+function totalTaxNow(num, element) {
+  return Math.round((num + element.tax) * 100)/100;
 }
 
 let sumsOfStates = dataset.reduce(arrToStateObj, {});
@@ -158,14 +160,14 @@ var stateSums = sumsOfStates;
     less than 1,000,000
  */
 
-function reduceLower(collection, elem) {
-  if (elem.amount < 1000000) {
-    collection.push(elem.state);
+function onlyLowerStates(collection, element) {
+  if (element.amount < 1000000) {
+    collection.push(element.state);
   }
   return collection;
 }
 
-var lowerSumStates = newArr.reduce(reduceLower, []);
+var lowerSumStates = newArr.reduce(onlyLowerStates, []);
 
 /*
   set higherStateSums to be the sum of
@@ -174,14 +176,14 @@ var lowerSumStates = newArr.reduce(reduceLower, []);
       greater than 1,000,000
  */
 
-function reduceHigher(total, elem) {
-  if (elem.amount > 1000000) {
-    total += elem.amount;
+function onlyHigherStates(total, element) {
+  if (element.amount > 1000000) {
+    total += element.amount;
   }
   return total;
 }
 
-var higherStateSums = newArr.reduce(reduceHigher, 0);
+var higherStateSums = newArr.reduce(onlyHigherStates, 0);
 
 
 
@@ -198,12 +200,12 @@ var higherStateSums = newArr.reduce(reduceHigher, 0);
   false otherwise
  */
 
-function reduceBool(elem) {
-  return elem.amount > 2550000;
+function checkAmount(element) {
+  return element.amount > 2550000;
 }
 
-var areStatesInHigherStateSum = newArr.filter(filterStates)
-  .every(reduceBool);
+var areStatesInHigherStateSum = newArr.filter(outSpecialStates)
+  .every(checkAmount);
 
 /*
   Stretch Goal && Final Boss
@@ -220,8 +222,8 @@ var areStatesInHigherStateSum = newArr.filter(filterStates)
   false otherwise
  */
 
-var anyStatesInHigherStateSum = newArr.filter(filterStates)
-  .some(reduceBool);
+var anyStatesInHigherStateSum = newArr.filter(outSpecialStates)
+  .some(checkAmount);
 
 module.exports = {
   hundredThousandairs : hundredThousandairs,
