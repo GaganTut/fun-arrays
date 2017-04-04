@@ -7,7 +7,8 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "mocha --watch --bail"
+    "test": "mocha",
+    "test:dev": "npm test --  --watch --bail"
   },
   "repository": {
     "type": "git",
